@@ -1,15 +1,15 @@
-// src/app/print/[gameId]/page.jsx
-
+// src/app/print/page.jsx
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
-import { useParams } from 'next/navigation';
-import { supabase } from '../../../utils/supabase';
-import '../../../styles/PrintRoadmap.css';
+import React, { useState, useEffect, useMemo, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation'; // 👈 変更: クエリパラメータ用
+import { supabase } from '../../utils/supabase'; // 階層が変わったので ../../ に戻る
+import '../../styles/PrintRoadmap.css';
 
-const PrintRoadmap = () => {
-  const params = useParams();
-  const gameId = params.gameId;
+// データを読み込むメイン部分
+const PrintContent = () => {
+  const searchParams = useSearchParams();
+  const gameId = searchParams.get('gameId'); // 👈 URLの ?gameId=... を取得
 
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -60,9 +60,8 @@ const PrintRoadmap = () => {
     };
   };
 
-  // --- 3. 線の計算 (ここを return より上に持ってくる！) ---
+  // --- 3. 線の計算 ---
   const linesPath = useMemo(() => {
-    // game がまだ読み込まれていない時は計算しない
     if (!game || !game.steps || game.steps.length < 2) return '';
 
     let path = '';
@@ -73,10 +72,9 @@ const PrintRoadmap = () => {
       path += `M${current.x + CARD_OFFSET_X} ${current.y + CARD_OFFSET_Y} L${next.x + CARD_OFFSET_X} ${next.y + CARD_OFFSET_Y} `;
     }
     return path;
-  }, [game]); // game が変わるたびに再計算
+  }, [game]);
 
-  // --- 4. ここで初めて Early Return (表示の分岐) を行う ---
-  // Hooks の呼び出しが終わった後なのでエラーにならない
+  // --- 4. Early Return ---
   if (loading) return <div className="print-error">データを読み込んでいます...</div>;
   if (!game) return <div className="print-error">ゲームが見つかりません: {gameId}</div>;
 
@@ -124,6 +122,15 @@ const PrintRoadmap = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+// Next.jsで useSearchParams を使う場合は Suspense で囲むルールがあるため
+const PrintRoadmap = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PrintContent />
+    </Suspense>
   );
 };
 
