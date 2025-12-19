@@ -1,0 +1,292 @@
+/* src/styles/Roadmap.css */
+
+/* ==============================
+   リセットとアプリ全体のレイアウト
+   ============================== */
+* {
+    box-sizing: border-box; 
+}
+.roadmap-container {
+    width: 100%;
+    min-height: 100vh;
+    
+    font-size: 110%; 
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+    /* 👇 修正: 上のパディングを100pxに増やして、ナビゲーションバーとの距離を確保 */
+    padding: 100px 20px 40px 20px; 
+    
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f8f8;
+    box-sizing: border-box;
+}
+
+/* ==============================
+   ナビゲーションバー
+   ============================== */
+.app-nav {
+    position: fixed; /* 画面に固定 */
+    top: 0;
+    left: 0;
+    width: 100%; 
+    background-color: #343a40; 
+    padding: 10px 0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+}
+
+.app-nav a {
+    color: white; 
+    text-decoration: none;
+    padding: 8px 15px;
+    margin: 0 10px;
+    border-radius: 5px;
+    transition: background-color 0.2s;
+    font-weight: bold;
+}
+
+.app-nav a:hover {
+    background-color: #495057;
+}
+
+.app-nav span {
+    color: #6c757d;
+    padding: 0 5px;
+    line-height: 2.2; 
+}
+
+
+/* ==============================
+   メインレイアウト（横並び設定）
+   ============================== */
+.main-layout {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    width: 100%;
+    max-width: 1200px;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+/* ==============================
+   ゲーム切り替えボタンエリア
+   ============================== */
+.game-selector {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.game-selector button {
+    margin: 5px;
+    padding: 8px 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 20px;
+    transition: all 0.2s;
+    font-size: 1em;
+    background-color: #e0e0e0;
+    color: #333;
+    white-space: nowrap;
+}
+
+.game-selector button.active {
+    font-weight: bold;
+    background-color: #ff9800;
+    color: white;
+    box-shadow: 0 3px #e65100;
+    transform: translateY(-1px);
+}
+
+/* ==============================
+   ロードマップ表示エリア（すごろく盤面）
+   ============================== */
+.roadmap-grid-container {
+    position: relative;
+    
+    width: 1000px; /* PCサイズでの盤面幅 */
+    height: 600px; 
+    flex-shrink: 0;
+
+    border: 2px dashed #ccc;
+    border-radius: 15px;
+    background-color: #ffffff;
+    margin: 0;
+
+    overflow-y: auto; 
+    overflow-x: hidden; 
+    
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+/* ロードマップの要素を入れるラッパー */
+.roadmap-steps {
+    position: relative; 
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+
+/* ==============================
+   各ステップのマス（カード）
+   ============================== */
+.step-card {
+    position: absolute;
+    z-index: 10;
+    
+    width: 140px; 
+    height: auto;
+    min-height: 100px;
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    
+    background-color: white;
+    border: 2px solid #333;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    
+    box-shadow: 3px 3px 0 #333;
+    transition: transform 0.1s, box-shadow 0.1s;
+}
+
+/* 画像のスタイル */
+.step-image {
+    width: 100%;
+    height: auto;
+    max-height: 80px;
+    object-fit: contain; 
+    margin-bottom: 8px;
+}
+
+/* テキスト調整 */
+.step-id {
+    margin: 0 0 4px 0;
+    font-size: 0.8em;
+    color: #e65100;
+}
+
+.step-card h3 {
+    margin: 0 0 4px 0;
+    font-size: 1em; 
+    color: #e65100;
+}
+
+.step-title {
+    margin: 2px 0 0 0;
+    font-size: 0.7em;
+    line-height: 1.2;
+    font-weight: bold;
+    color: #333;
+}
+
+.step-card p {
+    margin: 0;
+    font-size: 0.7em;
+    line-height: 1.3;
+    font-weight: bold;
+    color: #333;
+}
+
+/* --- 状態変化 --- */
+.step-card.active {
+    background-color: #fff3e0;
+    border-color: #ef6c00;
+    transform: translateY(2px);
+    box-shadow: 1px 1px 0 #333;
+}
+
+.step-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 5px 5px 0 #333;
+}
+
+/* ==============================
+   詳細パネルエリア（右側）
+   ============================== */
+.detail-panel {
+    flex: 1;
+    min-width: 300px;
+    background-color: white;
+    padding: 20px;
+    border-radius: 15px;
+    border: 2px solid #eee;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    height: 600px;
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
+.detail-panel h2 {
+    margin-top: 0;
+    color: #333;
+    border-bottom: 2px solid #ff9800;
+    padding-bottom: 10px;
+}
+
+/* ==============================
+   SVGの線（コネクター）
+   ============================== */
+.roadmap-lines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+
+/* ==============================
+   レスポンシブ対応 (スマホ/タブレット)
+   ============================== */
+@media (max-width: 768px) {
+    .roadmap-container {
+        /* 👇 修正: スマホでもナビゲーションとかぶらないように余白調整 */
+        padding: 80px 10px 20px 10px; 
+        font-size: 100%; 
+    }
+
+    .main-layout {
+        flex-direction: column; 
+        max-width: 100%;
+        gap: 20px;
+        padding: 0 10px; 
+    }
+
+    .roadmap-grid-container {
+        width: 100%; 
+        min-height: 400px;
+        height: auto; 
+        margin: 0;
+        overflow-x: auto; 
+        box-sizing: border-box; 
+    }
+
+    .detail-panel {
+        width: 100%; 
+        padding: 15px;
+        min-width: unset; 
+        height: auto; 
+        margin-bottom: 20px;
+        box-sizing: border-box;
+    }
+    
+    .step-card {
+        width: 120px; 
+        min-height: 90px;
+        padding: 8px;
+        font-size: 0.9em; 
+    }
+}

@@ -1,0 +1,151 @@
+/* src/styles/PrintRoadmap.css */
+
+.print-container {
+  background-color: #eee;
+  min-height: 100vh;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: "Comic Sans MS", "Chalkboard SE", sans-serif; /* ポップなフォント */
+}
+
+/* 用紙エリア (A4横想定) */
+.print-sheet {
+  background: white;
+  width: 1123px; /* A4横サイズ (約) */
+  min-height: 794px;
+  padding: 40px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  box-sizing: border-box;
+  position: relative;
+}
+
+/* タイトル周り */
+.print-title {
+  text-align: center;
+  font-size: 42px;
+  margin: 0 0 10px 0;
+  color: #ff6b00;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  border-bottom: 4px dashed #ff6b00;
+  display: inline-block;
+  padding-bottom: 10px;
+}
+
+.print-desc {
+  text-align: center;
+  color: #666;
+  margin-bottom: 40px;
+}
+
+/* グリッドエリア */
+.print-grid {
+  position: relative;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.print-lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  opacity: 0.3;
+}
+
+/* カードデザイン */
+.print-card {
+  position: absolute;
+  width: 160px;
+  height: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 10;
+}
+
+/* スタンプを押す丸いエリア */
+.stamp-area {
+  width: 80px;
+  height: 80px;
+  border: 3px dashed #bbb;
+  border-radius: 50%;
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+  background-color: #fafafa;
+}
+
+.stamp-placeholder {
+  color: #ccc;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.card-info {
+  text-align: center;
+  background: #333;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 10px;
+  width: 100%;
+  box-shadow: 2px 2px 0 #999;
+}
+
+.card-info h3 {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.mini-icon {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  margin-top: 5px;
+  background: white;
+  border-radius: 50%;
+  padding: 2px;
+}
+
+.print-footer {
+  margin-top: 50px;
+  text-align: right;
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  border-top: 2px solid #eee;
+  padding-top: 20px;
+}
+
+/* 印刷時の設定 */
+@media print {
+  /* 操作ボタンを消す */
+  .no-print {
+    display: none !important;
+  }
+
+  .print-container {
+    background: none;
+    padding: 0;
+  }
+
+  .print-sheet {
+    box-shadow: none;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* 背景画像を印刷させる設定 (ブラウザによる) */
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

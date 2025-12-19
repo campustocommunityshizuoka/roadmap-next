@@ -1,0 +1,244 @@
+/* src/styles/Admin.css */
+
+/* ==============================
+   基本レイアウト
+   ============================== */
+.admin-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  font-family: sans-serif;
+  background-color: #f4f4f9;
+  min-height: 100vh;
+}
+
+.admin-header {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  margin-bottom: 30px;
+  
+  /* 👇 修正: sticky(追従)を削除して、普通に配置されるように変更 */
+  position: relative; 
+  /* top: 0; は削除 */
+  /* z-index: 100; は削除 */
+}
+
+.note {
+  font-size: 12px;
+  color: #666;
+  margin-top: 10px;
+  background: #fff3cd;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+/* ゲームカード */
+.admin-game-card {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 15px;
+  margin-bottom: 15px;
+}
+
+/* タイトル入力欄 */
+.input-title {
+  font-size: 24px;
+  font-weight: bold;
+  border: none;
+  border-bottom: 2px solid #ddd;
+  padding: 5px;
+  width: 70%;
+}
+.input-title:focus { outline: none; border-bottom-color: #007bff; }
+
+/* フォーム入力 */
+.form-group {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.form-row {
+  margin-bottom: 10px;
+}
+
+.form-row label {
+  display: block;
+  font-weight: bold;
+  font-size: 12px;
+  margin-bottom: 5px;
+  color: #555;
+}
+
+input[type="text"], textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+textarea { height: 60px; resize: vertical; }
+
+/* ステップリスト（編集フォーム） */
+.steps-list {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.admin-step-card {
+  background: white;
+  border: 1px solid #e9ecef;
+  padding: 15px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  transition: transform 0.2s, box-shadow 0.2s; /* アニメーション用 */
+}
+
+/* ドラッグ中のスタイル */
+.admin-step-card.dragging {
+  opacity: 0.5;
+  border: 2px dashed #007bff;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  background-color: #e7f1ff;
+}
+
+.step-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* 縦位置中央揃え */
+  margin-bottom: 10px;
+}
+
+.step-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ドラッグ用のハンドル（つまみ） */
+.drag-handle {
+  cursor: grab;
+  font-size: 20px;
+  color: #adb5bd;
+  padding: 0 5px;
+  user-select: none; /* テキスト選択防止 */
+}
+.drag-handle:active {
+  cursor: grabbing;
+  color: #007bff;
+}
+
+/* ボタン類 */
+.save-button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: bold;
+}
+.save-button:hover { background-color: #218838; }
+
+.add-game-btn {
+  width: 100%;
+  padding: 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 18px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.add-step-btn {
+  width: 100%;
+  padding: 10px;
+  background-color: #e9ecef;
+  border: 2px dashed #ced4da;
+  color: #495057;
+  cursor: pointer;
+  margin-top: 10px;
+  border-radius: 5px;
+}
+.add-step-btn:hover { background-color: #dee2e6; }
+
+.delete-btn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.delete-btn-sm {
+  background-color: #ff6b6b;
+  color: white;
+  border: none;
+  width: 30px; 
+  height: 30px;
+  line-height: 30px; 
+  font-size: 16px; 
+  border-radius: 50%;
+  cursor: pointer;
+  font-weight: bold;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.step-number {
+  font-weight: bold;
+  color: #007bff;
+  background: #e7f1ff;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 12px;
+}
+
+/* ==============================
+   レスポンシブ対応
+   ============================== */
+@media (max-width: 600px) {
+    .admin-container {
+        padding: 10px;
+        font-size: 90%;
+    }
+    
+    .game-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .form-group {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+
+    .form-group label, .form-group input {
+        width: 100% !important;
+        margin-top: 5px;
+    }
+}
