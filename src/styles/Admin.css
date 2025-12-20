@@ -1,6 +1,40 @@
 /* src/styles/Admin.css */
 
 /* ==============================
+   ナビゲーションバー（ここを追加・復活）
+   ============================== */
+.app-nav {
+  /* 👇 追従(fixed)させず、普通に配置 */
+  position: relative; 
+  width: 100%;
+  background-color: #343a40; /* 背景をダークグレーに */
+  padding: 10px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.app-nav a {
+  color: white; /* 文字色を白に */
+  text-decoration: none;
+  padding: 8px 15px;
+  margin: 0 10px;
+  border-radius: 5px;
+  transition: background-color 0.2s;
+  font-weight: bold;
+}
+
+.app-nav a:hover {
+  background-color: #495057; /* ホバー時に少し明るく */
+}
+
+.app-nav span {
+  color: #6c757d;
+  padding: 0 5px;
+}
+
+/* ==============================
    基本レイアウト
    ============================== */
 .admin-container {
@@ -18,11 +52,7 @@
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   margin-bottom: 30px;
-  
-  /* 👇 修正: sticky(追従)を削除して、普通に配置されるように変更 */
   position: relative; 
-  /* top: 0; は削除 */
-  /* z-index: 100; は削除 */
 }
 
 .note {
@@ -61,6 +91,10 @@
   border-bottom: 2px solid #ddd;
   padding: 5px;
   width: 70%;
+  
+  /* ダークモード対策 */
+  background-color: #ffffff !important;
+  color: #333333 !important;
 }
 .input-title:focus { outline: none; border-bottom-color: #007bff; }
 
@@ -90,11 +124,16 @@ input[type="text"], textarea {
   border: 1px solid #ced4da;
   border-radius: 4px;
   box-sizing: border-box;
+
+  /* ダークモード対策 */
+  background-color: #ffffff !important;
+  color: #333333 !important;
+  -webkit-appearance: none;
 }
 
 textarea { height: 60px; resize: vertical; }
 
-/* ステップリスト（編集フォーム） */
+/* ステップリスト */
 .steps-list {
   background-color: #f8f9fa;
   padding: 15px;
@@ -107,7 +146,7 @@ textarea { height: 60px; resize: vertical; }
   padding: 15px;
   border-radius: 5px;
   margin-bottom: 10px;
-  transition: transform 0.2s, box-shadow 0.2s; /* アニメーション用 */
+  transition: transform 0.2s, box-shadow 0.2s; 
 }
 
 /* ドラッグ中のスタイル */
@@ -121,7 +160,7 @@ textarea { height: 60px; resize: vertical; }
 .step-header {
   display: flex;
   justify-content: space-between;
-  align-items: center; /* 縦位置中央揃え */
+  align-items: center; 
   margin-bottom: 10px;
 }
 
@@ -131,13 +170,13 @@ textarea { height: 60px; resize: vertical; }
   gap: 10px;
 }
 
-/* ドラッグ用のハンドル（つまみ） */
+/* ドラッグ用ハンドル */
 .drag-handle {
   cursor: grab;
   font-size: 20px;
   color: #adb5bd;
   padding: 0 5px;
-  user-select: none; /* テキスト選択防止 */
+  user-select: none; 
 }
 .drag-handle:active {
   cursor: grabbing;

@@ -9,8 +9,9 @@ import '../../styles/Admin.css';
 const Admin = () => {
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false); // アップロード中の状態
 
-  // --- 1. データ読み込み (Supabaseから) ---
+  // --- 1. データ読み込み ---
   useEffect(() => {
     const fetchGames = async () => {
       const { data, error } = await supabase
@@ -30,10 +31,9 @@ const Admin = () => {
     fetchGames();
   }, []);
 
-  // --- 2. データ保存 (Supabaseへ) ---
+  // --- 2. データ保存 ---
   const saveToCloud = async (newGames) => {
     setGames(newGames);
-
     const { error } = await supabase
       .from('games')
       .update({ steps: newGames })
@@ -47,10 +47,53 @@ const Admin = () => {
     }
   };
 
-  // --- 以下、ロジック ---
+  // --- 3. 画像アップロード処理 (New!) ---
+  const handleImageUpload = async (e, gameIndex, stepIndex) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      // ファイル名をユニークにする (例: 173456789.png)
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      // Supabase Storageにアップロード
+      const { error: uploadError } = await supabase.storage
+        .from('roadmap') // 作成したバケット名
+        .upload(filePath, file);
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      // 公開URLを取得
+      const { data } = supabase.storage
+        .from('roadmap')
+        .getPublicUrl(filePath);
+
+      // 該当ステップの画像パスを更新
+      const newGames = [...games];
+      newGames[gameIndex].steps[stepIndex].image = data.publicUrl;
+      saveToCloud(newGames); // 即保存
+
+      alert('画像を追加しました！📸');
+
+    } catch (error) {
+      console.error('Upload Error:', error);
+      alert('画像のアップロードに失敗しました...');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  // --- 以下、既存ロジック ---
 
   const dragItem = useRef(null);
   const dragOverItem = useRef(null);
+  const scrollSpeed = useRef(0);
+  const animationFrameId = useRef(null);
 
   const updateGame = (gameIndex, field, value) => {
     const newGames = [...games];
@@ -101,9 +144,36 @@ const Admin = () => {
     saveToCloud(newGames);
   };
 
+  // 自動スクロール
+  const handleWindowDragOver = (e) => {
+    const threshold = 100;
+    const maxSpeed = 20;
+    const { innerHeight } = window;
+    const clientY = e.clientY;
+
+    if (clientY < threshold) {
+      const intensity = (threshold - clientY) / threshold;
+      scrollSpeed.current = -(maxSpeed * intensity);
+    } else if (clientY > innerHeight - threshold) {
+      const intensity = (clientY - (innerHeight - threshold)) / threshold;
+      scrollSpeed.current = maxSpeed * intensity;
+    } else {
+      scrollSpeed.current = 0;
+    }
+  };
+
+  const performAutoScroll = () => {
+    if (scrollSpeed.current !== 0) {
+      window.scrollBy(0, scrollSpeed.current);
+    }
+    animationFrameId.current = requestAnimationFrame(performAutoScroll);
+  };
+
   const handleDragStart = (e, position) => {
     dragItem.current = position;
     e.target.closest('.admin-step-card').classList.add('dragging');
+    window.addEventListener('dragover', handleWindowDragOver);
+    animationFrameId.current = requestAnimationFrame(performAutoScroll);
   };
 
   const handleDragEnter = (e, position, gameIndex) => {
@@ -127,6 +197,11 @@ const Admin = () => {
     dragItem.current = null;
     dragOverItem.current = null;
     e.target.closest('.admin-step-card').classList.remove('dragging');
+    window.removeEventListener('dragover', handleWindowDragOver);
+    if (animationFrameId.current) {
+      cancelAnimationFrame(animationFrameId.current);
+    }
+    scrollSpeed.current = 0;
     saveToCloud(games);
   };
 
@@ -160,14 +235,13 @@ const Admin = () => {
                 placeholder="ゲーム名"
               />
               <div style={{ display: 'flex', gap: '10px' }}>
-                {/* 👇 ここに印刷ボタンを追加しました！ */}
                 <Link 
-                  href={`/print/${game.gameId}`} 
+                  href={`/print?gameId=${game.gameId}`}
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="delete-btn" // 同じクラスを使ってボタンっぽく見せる
+                  className="delete-btn"
                   style={{ 
-                    backgroundColor: '#6f42c1', // 紫色
+                    backgroundColor: '#6f42c1',
                     textDecoration: 'none', 
                     textAlign: 'center', 
                     display:'flex', 
@@ -239,12 +313,35 @@ const Admin = () => {
                   </div>
 
                   <div className="form-row">
-                    <label>画像パス:</label>
-                    <input
-                      type="text"
-                      value={step.image || ""}
-                      onChange={(e) => updateStep(gameIndex, stepIndex, 'image', e.target.value)}
-                    />
+                    <label>画像:</label>
+                    {/* 👇 修正: 画像アップロード機能を追加 */}
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                      <input
+                        type="text"
+                        value={step.image || ""}
+                        onChange={(e) => updateStep(gameIndex, stepIndex, 'image', e.target.value)}
+                        placeholder="画像のURL（または右からアップロード）"
+                        style={{ flex: 1 }}
+                      />
+                      <label className="save-button" style={{ 
+                          fontSize: '12px', padding: '8px', backgroundColor: '#6c757d', cursor: uploading ? 'wait' : 'pointer', margin: 0 
+                        }}>
+                        {uploading ? '送信中...' : '📂 アップロード'}
+                        <input 
+                          type="file" 
+                          accept="image/*"
+                          style={{ display: 'none' }} 
+                          onChange={(e) => handleImageUpload(e, gameIndex, stepIndex)}
+                          disabled={uploading}
+                        />
+                      </label>
+                    </div>
+                    {/* プレビュー表示 */}
+                    {step.image && (
+                      <div style={{ marginTop: '5px' }}>
+                        <img src={step.image} alt="preview" style={{ maxHeight: '50px', border: '1px solid #ccc' }} />
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
