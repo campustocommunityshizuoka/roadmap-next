@@ -9,7 +9,7 @@ import '../../styles/Admin.css';
 const Admin = () => {
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [uploading, setUploading] = useState(false); // アップロード中の状態
+  const [uploading, setUploading] = useState(false); 
 
   // --- 1. データ読み込み ---
   useEffect(() => {
@@ -47,36 +47,30 @@ const Admin = () => {
     }
   };
 
-  // --- 3. 画像アップロード処理 (New!) ---
+  // --- 3. 画像アップロード処理 ---
   const handleImageUpload = async (e, gameIndex, stepIndex) => {
     const file = e.target.files[0];
     if (!file) return;
 
     setUploading(true);
     try {
-      // ファイル名をユニークにする (例: 173456789.png)
       const fileExt = file.name.split('.').pop();
       const fileName = `${Date.now()}.${fileExt}`;
       const filePath = `${fileName}`;
 
-      // Supabase Storageにアップロード
       const { error: uploadError } = await supabase.storage
-        .from('roadmap') // 作成したバケット名
+        .from('roadmap-images') 
         .upload(filePath, file);
 
-      if (uploadError) {
-        throw uploadError;
-      }
+      if (uploadError) throw uploadError;
 
-      // 公開URLを取得
       const { data } = supabase.storage
-        .from('roadmap')
+        .from('roadmap-images')
         .getPublicUrl(filePath);
 
-      // 該当ステップの画像パスを更新
       const newGames = [...games];
       newGames[gameIndex].steps[stepIndex].image = data.publicUrl;
-      saveToCloud(newGames); // 即保存
+      saveToCloud(newGames); 
 
       alert('画像を追加しました！📸');
 
@@ -86,6 +80,15 @@ const Admin = () => {
     } finally {
       setUploading(false);
     }
+  };
+
+  // --- 4. 画像削除処理 (New!) ---
+  const handleDeleteImage = (gameIndex, stepIndex) => {
+    if (!confirm('この画像を削除しますか？')) return;
+
+    const newGames = [...games];
+    newGames[gameIndex].steps[stepIndex].image = ""; // URLを空にする
+    saveToCloud(newGames);
   };
 
   // --- 以下、既存ロジック ---
@@ -314,7 +317,6 @@ const Admin = () => {
 
                   <div className="form-row">
                     <label>画像:</label>
-                    {/* 👇 修正: 画像アップロード機能を追加 */}
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                       <input
                         type="text"
@@ -336,10 +338,18 @@ const Admin = () => {
                         />
                       </label>
                     </div>
-                    {/* プレビュー表示 */}
+                    
+                    {/* 👇 修正: プレビュー表示＋削除ボタン */}
                     {step.image && (
-                      <div style={{ marginTop: '5px' }}>
-                        <img src={step.image} alt="preview" style={{ maxHeight: '50px', border: '1px solid #ccc' }} />
+                      <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <img src={step.image} alt="preview" style={{ maxHeight: '60px', border: '1px solid #ccc', borderRadius:'4px' }} />
+                        <button 
+                          className="delete-btn-sm" 
+                          onClick={() => handleDeleteImage(gameIndex, stepIndex)}
+                          title="画像を削除"
+                        >
+                          ×
+                        </button>
                       </div>
                     )}
                   </div>
